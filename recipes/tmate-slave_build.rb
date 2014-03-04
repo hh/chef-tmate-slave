@@ -1,23 +1,20 @@
-
-git "/tmp/tmate-slave" do
+git node['tmate']['app_path'] do
   repository "https://github.com/nviennot/tmate-slave.git"
   action :sync
   user "root"
   group "root"
+  notifies :run, "bash[compile tmate]", :immediately
 end
 
-script "compile_tmate-slave_part1" do
-    interpreter "bash"
-      user "root"
-      cwd "/tmp/tmate-slave"
-      code <<-EOH
-        STATUS=0
-        bash create_keys.sh > /root/tmate-slave-footprints.txt || STATUS=1
-        cp -r /tmp/tmate-slave/keys /root/keys/
-        cd /tmp/tmate-slave
-        ./autogen.sh || STATUS=1
-        ./configure || STATUS=1
-        make || STATUS=1
-        exit $STATUS
-      EOH
+bash "compile tmate" do
+  action :nothing
+  user "root"
+  cwd node['tmate']['app_path']
+  code <<-EOH
+    STATUS=0
+    ./autogen.sh || STATUS=1
+    ./configure || STATUS=1
+    make || STATUS=1
+    exit $STATUS
+  EOH
 end
