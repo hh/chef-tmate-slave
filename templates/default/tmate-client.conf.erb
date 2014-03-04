@@ -1,0 +1,6 @@
+set -g tmate-identity ""
+set -g tmate-server-host "<%= node['ipaddress'] %>"
+set -g tmate-server-port <%= node['tmate']['listen_port'] %>
+<% %w{ dsa ecdsa rsa }.each do |c| %>
+set -g tmate-server-<%=c%>-fingerprint <%=node['tmate']['keys'][c]['fingerprint']%>
+<% end %>
